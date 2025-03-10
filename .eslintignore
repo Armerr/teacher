@@ -1,0 +1,6 @@
+public/*
+dist/*
+tests/*
+*.d.ts
+src/common/router/routesConfig.js
+src/components/mobile-select/*
