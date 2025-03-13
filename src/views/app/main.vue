@@ -86,7 +86,7 @@ import qs from 'qs';
 import { RouterView } from 'vue-router';
 import { reactive, ref, provide, computed, onMounted } from 'vue';
 import { message } from 'ant-design-vue';
-import { MAX_TAB_NUM, YX_STAFF_INFO } from '@common/constant';
+import { MAX_TAB_NUM, USER_NAME } from '@common/constant';
 import router from '@common/router';
 
 const openKeys = ref(['sub1']);
@@ -94,8 +94,8 @@ const selectedKeys = ref(['1']);
 const activeKey = ref('');
 const tabPanes = ref([]);
 const loginName = computed(() => {
-  const info = storage.get(YX_STAFF_INFO);
-  return info.staffName || '';
+  const username = storage.get(USER_NAME);
+  return username || '';
 });
 
 provide('openTab', openTab);

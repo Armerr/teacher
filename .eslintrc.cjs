@@ -6,6 +6,9 @@ module.exports = {
     node: true,
     es2018: true,
   },
+  globals: {
+    __DEV__: 'off',
+  },
   extends: [
     'eslint:recommended',
     'plugin:vue/vue3-recommended',
@@ -39,6 +42,7 @@ module.exports = {
     ],
     // 'vue/name-property-casing': ['error', 'PascalCase'],
     'vue/no-v-html': 'off',
+    'vue/require-v-for-key': 0,
     'vue/html-closing-bracket-newline': 'off',
     'vue/valid-v-slot': 'off',
     'vue/html-self-closing': [
@@ -109,7 +113,7 @@ module.exports = {
       {
         pathGroups: [
           {
-            pattern: '@**',
+            pattern: '@/**',
             group: 'external',
             position: 'after',
           },

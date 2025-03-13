@@ -6,7 +6,7 @@
       alt="" />
     <div class="action-view">
       <a-input
-        v-model:value="data.loginName"
+        v-model:value="data.mobile"
         allow-clear>
         <template #addonBefore>
           <div style="display: flex">
@@ -39,7 +39,7 @@
 <script setup>
 import { LockOutlined, UserOutlined } from '@ant-design/icons-vue';
 import { login } from '@api/login';
-import { YX_STAFF_ID, YX_STAFF_INFO, YX_TOKEN, MT_AUTH } from '@common/constant';
+import { USER_ID, USER_NAME, A_TOKEN } from '@common/constant';
 import storage from '@common/storage';
 import router from '@common/router';
 import { message } from 'ant-design-vue';
@@ -47,20 +47,19 @@ import md5 from 'blueimp-md5';
 import { ref } from 'vue';
 
 const data = ref({
-  loginName: '',
+  mobile: '',
   password: '',
 });
 
 function loginClick() {
   login({
-    loginname: data.value.loginName,
+    mobile: data.value.mobile,
     password: md5(data.value.password),
   }).then((res) => {
     message.success('登录成功');
-    storage.set(YX_TOKEN, res.token);
-    storage.set(YX_STAFF_ID, res.staffBasicInfo.staffId);
-    storage.set(YX_STAFF_INFO, res.staffBasicInfo);
-    storage.set(MT_AUTH, res.staffBasicInfo.encryptedStaffId);
+    storage.set(A_TOKEN, res.token);
+    storage.set(USER_ID, res.userId);
+    storage.set(USER_NAME, res.username);
     router.replace('/main');
   });
 }

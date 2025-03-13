@@ -1,12 +1,11 @@
 import router from '@common/router';
 import axios from 'axios';
 import {
-  BASE_URI_DEV,
-  BASE_URI_PROD,
+  BASE_URI,
   TIME_OUT,
-  YX_STAFF_ID,
-  YX_TOKEN,
-  MT_AUTH,
+  USER_ID,
+  A_TOKEN,
+  A_TOKEN,
 } from '@common/constant';
 import storage from '@common/storage';
 import confirm from '@common/confirm';
@@ -28,7 +27,7 @@ function fetch(uri = '', method = 'get', params = {}, data = {}, options = {}) {
   return new Promise((resolve, reject) => {
     req
       .request({
-        url: `${dev ? BASE_URI_DEV : BASE_URI_PROD}${uri}`,
+        url: `${BASE_URI}${uri}`,
         method,
         params: params ?? {},
         data: body(),
@@ -75,19 +74,14 @@ function getRequest(options = {}) {
   });
   req.interceptors.request.use(
     (config) => {
-      const token = storage.get(YX_TOKEN) ?? '';
-      const mtAuth = storage.get(MT_AUTH) ?? '';
-      const staffId = storage.get(YX_STAFF_ID) ?? '';
-      if (mtAuth) {
-        config.headers['MT-AUTH'] = mtAuth;
-      }
+      const token = storage.get(A_TOKEN) ?? '';
+      const userId = storage.get(USER_ID) ?? '';
       if (token) {
-        config.params.token = token;
+        config.headers['Authorization'] = token;
       }
-      if (staffId) {
-        config.params.staffId = staffId;
+      if (userId) {
+        config.params.userId = userId;
       }
-      config.params.sensorsid = 'YX_ADMIN';
       return Promise.resolve(config);
     },
     (error) => {
