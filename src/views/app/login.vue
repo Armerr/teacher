@@ -5,8 +5,6 @@
       src="@assets/images/login-img.webp"
       alt="" />
     <div class="action-view">
-      <a-typography-title>包老师助学系统</a-typography-title>
-
       <a-input
         v-model:value="data.loginName"
         allow-clear>
@@ -73,6 +71,7 @@ function loginClick() {
   flex-direction: column;
   align-items: center;
   width: 400px;
+  margin-left: 10px;
   background: rgba(255, 255, 255, 0.6);
   padding: 30px;
   border-radius: 20px;
@@ -80,8 +79,9 @@ function loginClick() {
 }
 
 .login-icon {
-  width: 500px;
+  width: 400px;
   object-fit: contain;
+  border-radius: 60px;
 }
 
 .content {
