@@ -1,6 +1,6 @@
 export const MAX_TAB_NUM = 20;
 
-export const BASE_URI = '/interface';
+export const BASE_URI = '/api';
 // 所有的请求超时阈值
 export const TIME_OUT = 15000;
 export const A_TOKEN = 'A_AUTH';

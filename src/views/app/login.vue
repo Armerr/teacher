@@ -54,7 +54,7 @@ const data = ref({
 function loginClick() {
   login({
     mobile: data.value.mobile,
-    password: md5(data.value.password),
+    password: data.value.password,
   }).then((res) => {
     message.success('登录成功');
     storage.set(A_TOKEN, res.token);

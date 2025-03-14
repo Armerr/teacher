@@ -1,12 +1,6 @@
 import router from '@common/router';
 import axios from 'axios';
-import {
-  BASE_URI,
-  TIME_OUT,
-  USER_ID,
-  A_TOKEN,
-  A_TOKEN,
-} from '@common/constant';
+import { BASE_URI, TIME_OUT, USER_ID, A_TOKEN } from '@common/constant';
 import storage from '@common/storage';
 import confirm from '@common/confirm';
 import action from '@common/action';
@@ -27,7 +21,7 @@ function fetch(uri = '', method = 'get', params = {}, data = {}, options = {}) {
   return new Promise((resolve, reject) => {
     req
       .request({
-        url: `${BASE_URI}${uri}`,
+        url: `http://localhost:9919${uri}`,
         method,
         params: params ?? {},
         data: body(),
@@ -77,7 +71,7 @@ function getRequest(options = {}) {
       const token = storage.get(A_TOKEN) ?? '';
       const userId = storage.get(USER_ID) ?? '';
       if (token) {
-        config.headers['Authorization'] = token;
+        config.headers['Authorization'] = `Bearer ${token}`;
       }
       if (userId) {
         config.params.userId = userId;
@@ -105,6 +99,11 @@ function getRequest(options = {}) {
           .then(() => {
             action.login();
           });
+        return Promise.reject(error);
+      }
+
+      if (response.status === 401) {
+        confirm.pop(`${response.data.message}`, '错误');
         return Promise.reject(error);
       }
 

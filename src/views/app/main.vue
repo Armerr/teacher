@@ -7,7 +7,7 @@
         <div class="logo">
           <a href="/">
             <img
-              src="https://img.maitao.com/20240119/yanxue_logo.png"
+              src="../../assets/images/logo.png"
               style="height: 32px; border-radius: 50%"
               alt="" />
             <h3 style="color: #333; margin-left: 5px">包老师助学系统</h3>
@@ -26,7 +26,7 @@
     </a-layout-sider>
     <a-layout>
       <a-layout-header class="layout-header">
-        <div class="header-content">
+        <div class="roll-call-content">
           <a-popover>
             <template #content>
               <a-space direction="vertical">
@@ -41,7 +41,7 @@
             <div>
               <img
                 class="header-logo"
-                src="https://img.maitao.com/20240119/yanxue_logo.png"
+                src="../../assets/images/logo.png"
                 alt="" />
               <span class="header-name">{{ loginName }}</span>
             </div>
@@ -113,9 +113,7 @@ function getItem(label, key, icon, path, children, type) {
 }
 
 const menuItems = reactive([
-  getItem('研学助手', 'sub1', null, null, [
-    getItem('活动管理', 'g1', null, '/activity/activityList'),
-  ]),
+  getItem('教学助手', 'sub1', null, null, [getItem('班级管理', 'g1', null, '/class/classList')]),
 ]);
 
 function handleMenuClick(menu) {
@@ -202,7 +200,7 @@ function closeTab(path) {
 }
 
 onMounted(() => {
-  openTab('活动管理', '/activity/activityList');
+  openTab('班级管理', '/class/classList');
 });
 
 function tabEdit(targetKey, action) {
@@ -258,7 +256,7 @@ function tabEdit(targetKey, action) {
   line-height: 48px;
   padding-inline: 0;
   z-index: 9;
-  .header-content {
+  .roll-call-content {
     width: 100%;
     height: 100%;
     background: #fff;
