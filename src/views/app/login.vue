@@ -88,7 +88,7 @@ function loginClick() {
   flex-direction: row;
   align-items: center;
   justify-content: center;
-  background: url('@assets/images/login-bg.webp') no-repeat;
+  background: url('@assets/images/login-bg.webp') no-repeat center / cover;
   width: 100vw;
   height: 100vh;
 }
