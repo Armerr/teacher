@@ -21,7 +21,7 @@ function fetch(uri = '', method = 'get', params = {}, data = {}, options = {}) {
   return new Promise((resolve, reject) => {
     req
       .request({
-        url: `https://api2.armerr.top${uri}`,
+        url: `/api${uri}`,
         method,
         params: params ?? {},
         data: body(),
