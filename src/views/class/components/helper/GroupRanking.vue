@@ -1,4 +1,3 @@
-<!-- GroupRanking.vue -->
 <template>
   <a-card
     title="小组排行榜"
@@ -44,9 +43,10 @@ const getRankColor = (index) => {
 $rank-colors: (#ffd666, #d3adf7, #5cdbd3);
 
 .ranking-card {
-  margin-bottom: 24px;
-  border-radius: 8px;
+  width: 100%;
+  height: 100%;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  border-radius: 0 !important;
 
   :deep(.ant-card-head) {
     border-bottom: 1px solid #f0f0f0;
@@ -88,13 +88,14 @@ $rank-colors: (#ffd666, #d3adf7, #5cdbd3);
       display: flex;
       justify-content: space-between;
       align-items: center;
+      font-size: 18px;
 
-      &-name {
+      .group-name {
         font-weight: 500;
       }
 
-      &-score {
-        color: #2f54eb;
+      .group-score {
+        color: red;
         font-weight: 600;
       }
     }

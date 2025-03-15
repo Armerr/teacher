@@ -1,4 +1,3 @@
-<!-- GroupList.vue -->
 <template>
   <a-row
     :gutter="[16, 16]"
@@ -24,14 +23,18 @@
               shape="round"
               class="score-btn"
               @click="$emit('group-add', group.id)">
-              <template #icon><plus-outlined /></template>
+              <template #icon>
+                <plus-outlined />
+              </template>
             </a-button>
             <a-button
               danger
               shape="round"
               class="score-btn"
               @click="$emit('group-subtract', group.id)">
-              <template #icon><minus-outlined /></template>
+              <template #icon>
+                <minus-outlined />
+              </template>
             </a-button>
           </a-space>
         </div>
@@ -102,11 +105,6 @@ $secondary-text: #8c8c8c;
     border-radius: 8px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 
-    :deep(.ant-card-head) {
-      padding: 0 16px;
-      border-bottom: none;
-    }
-
     .group-header {
       display: flex;
       justify-content: space-between;
@@ -129,6 +127,10 @@ $secondary-text: #8c8c8c;
       .score-btn {
         width: 32px;
         height: 32px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0 !important;
       }
     }
 
@@ -141,7 +143,7 @@ $secondary-text: #8c8c8c;
       overflow-y: auto;
 
       .student-item {
-        padding: 8px 16px;
+        padding: 4px 16px;
         display: flex;
         justify-content: space-between;
         align-items: center;
@@ -183,5 +185,15 @@ $secondary-text: #8c8c8c;
       }
     }
   }
+}
+
+:deep(.ant-card-head) {
+  padding: 0 16px !important;
+  border-bottom: none !important;
+}
+
+:deep(.ant-card-body) {
+  padding: 5px 15px !important;
+  border-bottom: none !important;
 }
 </style>

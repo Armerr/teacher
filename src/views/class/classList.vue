@@ -102,7 +102,9 @@ function editClass(id) {
 }
 
 function classHelper(id) {
-  openTab('班级助手', `/class/classHelper?id=${id}`);
+  const params = {};
+  params.classId = id;
+  openTab('班级助手', `/class/classHelper`, params);
 }
 
 onMounted(() => {
