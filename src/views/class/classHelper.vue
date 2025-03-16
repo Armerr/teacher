@@ -167,7 +167,6 @@ onMounted(() => {
 
 <style lang="scss" scoped>
 .container {
-  background: url(https://img.armerr.top/pic/202503162220/0117169dADT.jpg) !important;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
