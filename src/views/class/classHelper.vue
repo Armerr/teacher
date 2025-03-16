@@ -1,11 +1,7 @@
 <template>
   <div class="container">
     <div class="left-container">
-      <RollCall
-        :is-rolling="isRolling"
-        :selected-student="selectedStudent"
-        @roll-start="handleRollStart"
-        @roll-stop="handleRollStop" />
+      <RollCall :students="allStudents" />
       <GroupList
         :groups="groups"
         @group-add="handleGroupAddScore"
@@ -45,24 +41,6 @@ const allStudents = computed(() => {
     }))
   );
 });
-
-const isRolling = ref(false);
-const selectedStudent = ref(null);
-let rollInterval = null;
-
-const handleRollStart = () => {
-  isRolling.value = true;
-  rollInterval = setInterval(() => {
-    const allStudents = groups.value.flatMap((g) => g.students);
-    const randomIndex = Math.floor(Math.random() * allStudents.length);
-    selectedStudent.value = allStudents[randomIndex].name;
-  }, 60);
-};
-
-const handleRollStop = () => {
-  isRolling.value = false;
-  clearInterval(rollInterval);
-};
 
 const handleGroupAddScore = (groupId) => {
   handleGroupAdjust(groupId, 1);
@@ -185,14 +163,11 @@ onMounted(() => {
     });
   }
 });
-
-onUnmounted(() => {
-  if (rollInterval) clearInterval(rollInterval);
-});
 </script>
 
 <style lang="scss" scoped>
 .container {
+  background: url(https://img.armerr.top/pic/202503162220/0117169dADT.jpg) !important;
   display: flex;
   flex-direction: row;
   justify-content: space-between;

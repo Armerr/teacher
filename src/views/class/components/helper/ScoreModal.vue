@@ -1,6 +1,6 @@
 <template>
   <a-modal
-    v-model:visible="visible"
+    v-model:open="visible"
     title="学生成绩总览"
     wrap-class-name="no-scroll-modal"
     width="600px"
