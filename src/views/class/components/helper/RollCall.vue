@@ -1,6 +1,5 @@
 <template>
-  <div class="container">
-    <div class="header">点名器</div>
+  <div class="roll-container">
     <div class="controls">
       <a-button
         v-if="!isRolling"
@@ -48,9 +47,13 @@ defineEmits(['roll-start', 'roll-stop']);
 </script>
 
 <style lang="scss" scoped>
-.container {
+.roll-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
   width: auto;
-  height: 100%;
+  height: 200px;
   padding: 16px 24px;
   line-height: 1.5;
   background: #fff;
@@ -80,7 +83,7 @@ defineEmits(['roll-start', 'roll-stop']);
     border-radius: 4px;
     margin: 0 auto;
     background: #f0f5ff;
-    width: 10%;
+    width: 20%;
 
     &-icon {
       margin-right: 8px;

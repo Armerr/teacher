@@ -1,21 +1,11 @@
 <template>
-  <a-space
-    direction="vertical"
-    :style="{ width: '100%' }"
-    :size="[0, 48]">
-    <a-layout>
-      <a-layout-content :style="contentStyle">
-        <RollCall
-          :is-rolling="isRolling"
-          :selected-student="selectedStudent"
-          @roll-start="handleRollStart"
-          @roll-stop="handleRollStop" />
-      </a-layout-content>
-      <a-layout-sider :width="300">
-        <GroupRanking :groups="sortedGroups" />
-      </a-layout-sider>
-    </a-layout>
-    <div class="helper-container">
+  <div class="container">
+    <div class="left-container">
+      <RollCall
+        :is-rolling="isRolling"
+        :selected-student="selectedStudent"
+        @roll-start="handleRollStart"
+        @roll-stop="handleRollStop" />
       <GroupList
         :groups="groups"
         @group-add="handleGroupAddScore"
@@ -23,7 +13,11 @@
         @student-add="handleStudentAddScore"
         @student-subtract="handleStudentSubtractScore" />
     </div>
-  </a-space>
+    <div class="right-container">
+      <GroupRanking :groups="sortedGroups" />
+      <StudentRanking :students="allStudents" />
+    </div>
+  </div>
 </template>
 
 <script setup>
@@ -31,6 +25,7 @@ import { ref, computed, onUnmounted, onMounted } from 'vue';
 import GroupList from '@views/class/components/helper/GroupList.vue';
 import RollCall from '@views/class/components/helper/RollCall.vue';
 import GroupRanking from '@views/class/components/helper/GroupRanking.vue';
+import StudentRanking from '@views/class/components/helper/StudentRanking.vue';
 import { message } from 'ant-design-vue';
 import { groupScoreInfo, handGroupScore, handStudentScore } from '@api/class.js';
 import { useRouter } from 'vue-router';
@@ -41,13 +36,15 @@ const router = useRouter();
 const controllers = {};
 const loading = ref({});
 
-const contentStyle = {
-  minHeight: 150,
-};
+const sortedGroups = computed(() => [...groups.value].sort((a, b) => b.score - a.score));
 
-const sortedGroups = computed(() =>
-  [...groups.value].sort((a, b) => b.score - a.score).slice(0, 3)
-);
+const allStudents = computed(() => {
+  return groups.value.flatMap((group) =>
+    group.students.map((student) => ({
+      ...student,
+    }))
+  );
+});
 
 const isRolling = ref(false);
 const selectedStudent = ref(null);
@@ -100,8 +97,7 @@ const handleGroupAdjust = async (groupId, delta) => {
 
     group.students.forEach((s) => {
       s.version = (s.version || 0) + 1;
-      const newScore = s.score + delta;
-      s.score = newScore > 0 ? newScore : 0;
+      s.score = s.score + delta;
     });
     group.score = group.students.reduce((sum, s) => sum + s.score, 0);
 
@@ -153,7 +149,7 @@ const adjustStudentScore = async (studentId, delta) => {
     group = groups.value.find((g) => g.students.some((s) => s.id === studentId));
     student = group.students.find((s) => s.id === studentId);
     originalScore = student.score;
-    const newScore = Math.max(0, originalScore + delta);
+    const newScore = originalScore + delta;
     student.score = newScore;
     group.score += delta;
 
@@ -196,7 +192,24 @@ onUnmounted(() => {
 </script>
 
 <style lang="scss" scoped>
-.content {
-  height: auto;
+.container {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  width: 100%;
+
+  .left-container {
+    width: 83%;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .right-container {
+    width: 15%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    gap: 40px;
+  }
 }
 </style>

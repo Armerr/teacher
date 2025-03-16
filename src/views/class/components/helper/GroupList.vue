@@ -49,6 +49,10 @@
               <div class="student-info">
                 <user-outlined class="student-icon" />
                 <span class="student-name">{{ item.name }}</span>
+                <crown-filled
+                  v-if="item.leader"
+                  class="leader-icon"
+                  style="color: #f8ab02; margin-left: 8px" />
               </div>
               <div class="student-actions">
                 <span class="student-score">{{ item.score }}</span>
@@ -80,7 +84,7 @@
 </template>
 
 <script setup>
-import { UserOutlined, PlusOutlined, MinusOutlined } from '@ant-design/icons-vue';
+import { UserOutlined, PlusOutlined, MinusOutlined, CrownFilled } from '@ant-design/icons-vue';
 
 defineProps({
   groups: {
@@ -98,7 +102,7 @@ $text-color: #1f1f1f;
 $secondary-text: #8c8c8c;
 
 .group-list {
-  margin: -8px;
+  margin: 20px 10px;
 
   .group-card {
     height: 100%;
@@ -164,6 +168,24 @@ $secondary-text: #8c8c8c;
 
           .student-name {
             color: $text-color;
+          }
+
+          .leader-icon {
+            margin-left: 8px;
+            font-size: 14px;
+            color: #ffc53d;
+            animation: leader-bling 2s ease-in-out infinite;
+          }
+
+          @keyframes leader-bling {
+            0%,
+            100% {
+              opacity: 1;
+            }
+            50% {
+              opacity: 0.8;
+              transform: scale(1.1);
+            }
           }
         }
 
