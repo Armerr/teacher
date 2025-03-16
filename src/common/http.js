@@ -39,7 +39,7 @@ function fetch(uri = '', method = 'get', params = {}, data = {}, options = {}) {
             resolve(data.data);
             return;
           }
-          if (data.errorCode === 4001) {
+          if (data.errorCode === 401) {
             storage.clearStaff();
             confirm.pop('认证信息过期，请重新登录', '错误', { popType: 'error' }).then(() => {
               router.replace('/login');
