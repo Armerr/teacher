@@ -1,6 +1,5 @@
 <template>
   <div class="student-roll-container">
-    <div class="header">点名器</div>
     <div class="controls">
       <a-button
         v-if="!isRolling"
@@ -83,7 +82,6 @@ const stopRolling = () => {
     font-size: 24px;
     font-weight: bold;
   }
-
 
   .rolling-display {
     font-size: 24px;

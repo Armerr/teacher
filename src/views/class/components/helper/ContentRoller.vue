@@ -1,6 +1,5 @@
 <template>
   <div class="content-roll-container">
-    <div class="header">背诵内容选择器</div>
     <div class="controls">
       <a-button
         v-if="!isRolling"
