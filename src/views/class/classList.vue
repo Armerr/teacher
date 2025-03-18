@@ -69,12 +69,10 @@ const reqParam = reactive({
 const openTab = inject('openTab');
 
 const search = (page = pagination.current) => {
-  showLoading();
   list({ page, limit: pagination.pageSize, ...reqParam }).then((res) => {
     rows.value = res.rows;
     pagination.total = res.total;
     pagination.current = page;
-    hideLoading();
   });
 };
 

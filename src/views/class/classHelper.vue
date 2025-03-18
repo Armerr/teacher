@@ -7,7 +7,8 @@
         @group-add="handleGroupAddScore"
         @group-subtract="handleGroupSubtractScore"
         @student-add="handleStudentAddScore"
-        @student-subtract="handleStudentSubtractScore" />
+        @student-subtract="handleStudentSubtractScore"
+        @set-leader="setLeader" />
     </div>
     <div class="right-container">
       <GroupRanking :groups="sortedGroups" />
@@ -17,14 +18,16 @@
 </template>
 
 <script setup>
-import { ref, computed, onUnmounted, onMounted } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import GroupList from '@views/class/components/helper/GroupList.vue';
 import RollCall from '@views/class/components/helper/RollCall.vue';
 import GroupRanking from '@views/class/components/helper/GroupRanking.vue';
 import StudentRanking from '@views/class/components/helper/StudentRanking.vue';
 import { message } from 'ant-design-vue';
-import { groupScoreInfo, handGroupScore, handStudentScore } from '@api/class.js';
+import { groupScoreInfo, handGroupScore, handStudentScore, setLeaderStudent } from '@api/class.js';
 import { useRouter } from 'vue-router';
+import storage from '@common/storage.js';
+import { USER_ID } from '@common/constant.js';
 
 const groups = ref([]);
 const classId = ref('');
@@ -41,6 +44,21 @@ const allStudents = computed(() => {
     }))
   );
 });
+
+const setLeader = (param) => {
+  if (param.groupId && param.studentId) {
+    const payload = {};
+    payload.classId = classId.value;
+    payload.groupId = param.groupId;
+    payload.studentId = param.studentId;
+    const baseParam = {};
+    baseParam.userId = storage.get(USER_ID) ?? '';
+    setLeaderStudent(baseParam, payload).then(() => {
+      init();
+      message.success('设置成功');
+    });
+  }
+};
 
 const handleGroupAddScore = (groupId) => {
   handleGroupAdjust(groupId, 1);
@@ -152,16 +170,17 @@ const adjustStudentScore = async (studentId, delta) => {
   }
 };
 
+function init() {
+  groupScoreInfo({ classId: classId.value }).then((res) => {
+    if (res) {
+      groups.value = res.groups;
+    }
+  });
+}
+
 onMounted(() => {
-  const id = router.currentRoute.value.query.classId;
-  if (id) {
-    classId.value = id;
-    groupScoreInfo({ classId: id }).then((res) => {
-      if (res) {
-        groups.value = res.groups;
-      }
-    });
-  }
+  classId.value = router.currentRoute.value.query.classId;
+  init();
 });
 </script>
 

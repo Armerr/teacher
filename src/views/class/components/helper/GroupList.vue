@@ -45,7 +45,10 @@
           :data-source="group.students"
           class="student-list">
           <template #renderItem="{ item }">
-            <a-list-item class="student-item">
+            <a-list-item
+              class="student-item"
+              @mouseenter="handleMouseEnter(item.id)"
+              @mouseleave="handleMouseLeave">
               <div class="student-info">
                 <user-outlined class="student-icon" />
                 <span class="student-name">{{ item.name }}</span>
@@ -53,6 +56,14 @@
                   v-if="item.leader"
                   class="leader-icon"
                   style="color: #f8ab02; margin-left: 8px" />
+                <a-button
+                  v-if="!item.leader && hoverStudentId === item.id"
+                  type="text"
+                  size="small"
+                  class="virtual-crown-btn"
+                  @click.stop="setLeader(group.id, item.id)">
+                  <crown-outlined style="color: rgba(0, 0, 0, 0.25)" />
+                </a-button>
               </div>
               <div class="student-actions">
                 <span class="student-score">{{ item.score }}</span>
@@ -84,7 +95,16 @@
 </template>
 
 <script setup>
-import { UserOutlined, PlusOutlined, MinusOutlined, CrownFilled } from '@ant-design/icons-vue';
+import {
+  UserOutlined,
+  PlusOutlined,
+  MinusOutlined,
+  CrownFilled,
+  CrownOutlined,
+} from '@ant-design/icons-vue';
+import { ref } from 'vue';
+
+const hoverStudentId = ref(null);
 
 defineProps({
   groups: {
@@ -93,7 +113,26 @@ defineProps({
   },
 });
 
-defineEmits(['group-add', 'group-subtract', 'student-add', 'student-subtract']);
+const emit = defineEmits([
+  'group-add',
+  'group-subtract',
+  'student-add',
+  'student-subtract',
+  'set-leader',
+]);
+
+const handleMouseEnter = (studentId) => {
+  hoverStudentId.value = studentId;
+};
+
+const handleMouseLeave = () => {
+  hoverStudentId.value = null;
+};
+
+const setLeader = (groupId, studentId) => {
+  emit('set-leader', { groupId, studentId });
+  hoverStudentId.value = null;
+};
 </script>
 
 <style lang="scss" scoped>
@@ -152,38 +191,34 @@ $secondary-text: #8c8c8c;
         justify-content: space-between;
         align-items: center;
         transition: background-color 0.3s;
+        cursor: pointer;
 
         &:hover {
           background-color: #fafafa;
         }
 
         .student-info {
+          position: relative;
           display: flex;
           align-items: center;
 
-          .student-icon {
-            margin-right: 12px;
-            color: $secondary-text;
-          }
+          .virtual-crown-btn {
+            margin-left: 8px;
+            transition: all 0.2s;
 
-          .student-name {
-            color: $text-color;
+            &:hover {
+              :deep(svg) {
+                color: #f8ab02 !important;
+              }
+            }
           }
 
           .leader-icon {
             margin-left: 8px;
-            font-size: 14px;
-            color: #ffc53d;
-            animation: leader-bling 2s ease-in-out infinite;
-          }
+            cursor: pointer;
+            transition: transform 0.2s;
 
-          @keyframes leader-bling {
-            0%,
-            100% {
-              opacity: 1;
-            }
-            50% {
-              opacity: 0.8;
+            &:hover {
               transform: scale(1.1);
             }
           }
