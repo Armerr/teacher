@@ -49,43 +49,14 @@
               class="student-item"
               @mouseenter="handleMouseEnter(item.id)"
               @mouseleave="handleMouseLeave">
-              <div class="student-info">
-                <user-outlined class="student-icon" />
-                <span class="student-name">{{ item.name }}</span>
-                <crown-filled
-                  v-if="item.leader"
-                  class="leader-icon"
-                  style="color: #f8ab02; margin-left: 8px" />
-                <a-button
-                  v-if="!item.leader && hoverStudentId === item.id"
-                  type="text"
-                  size="small"
-                  class="virtual-crown-btn"
-                  @click.stop="setLeader(group.id, item.id)">
-                  <crown-outlined style="color: rgba(0, 0, 0, 0.25)" />
-                </a-button>
-              </div>
-              <div class="student-actions">
-                <span class="student-score">{{ item.score }}</span>
-                <a-space>
-                  <a-button
-                    type="primary"
-                    shape="circle"
-                    size="small"
-                    class="action-btn"
-                    @click="$emit('student-add', item.id)">
-                    <plus-outlined />
-                  </a-button>
-                  <a-button
-                    danger
-                    shape="circle"
-                    size="small"
-                    class="action-btn"
-                    @click="$emit('student-subtract', item.id)">
-                    <minus-outlined />
-                  </a-button>
-                </a-space>
-              </div>
+              <student-info
+                :hover-student-id="hoverStudentId"
+                :item="item"
+                @student-add="$emit('student-add')"
+                @student-subtract="$emit('student-subtract')"
+                @set-leader="setLeader"
+                @start-editing-score="$emit('start-editing-score')"
+                @end-editing-score="$emit('end-editing-score')" />
             </a-list-item>
           </template>
         </a-list>
@@ -102,16 +73,15 @@ import {
   CrownFilled,
   CrownOutlined,
 } from '@ant-design/icons-vue';
-import { ref } from 'vue';
+import { nextTick, ref } from 'vue';
+import { onClickOutside } from '@vueuse/core';
+import StudentInfo from '@views/class/components/helper/StudentInfo.vue';
 
 const hoverStudentId = ref(null);
+const inputRef = ref(null);
 
-defineProps({
-  groups: {
-    type: Array,
-    required: true,
-  },
-});
+const currentEditGroupId = ref(null);
+const currentEditStudentId = ref(null);
 
 const emit = defineEmits([
   'group-add',
@@ -119,7 +89,16 @@ const emit = defineEmits([
   'student-add',
   'student-subtract',
   'set-leader',
+  'start-editing-score',
+  'end-editing-score',
 ]);
+
+defineProps({
+  groups: {
+    type: Array,
+    required: true,
+  },
+});
 
 const handleMouseEnter = (studentId) => {
   hoverStudentId.value = studentId;
@@ -195,49 +174,6 @@ $secondary-text: #8c8c8c;
 
         &:hover {
           background-color: #fafafa;
-        }
-
-        .student-info {
-          position: relative;
-          display: flex;
-          align-items: center;
-
-          .virtual-crown-btn {
-            margin-left: 8px;
-            transition: all 0.2s;
-
-            &:hover {
-              :deep(svg) {
-                color: #f8ab02 !important;
-              }
-            }
-          }
-
-          .leader-icon {
-            margin-left: 8px;
-            cursor: pointer;
-            transition: transform 0.2s;
-
-            &:hover {
-              transform: scale(1.1);
-            }
-          }
-        }
-
-        .student-actions {
-          .student-score {
-            margin-right: 12px;
-            font-weight: 500;
-            color: $primary-color;
-          }
-
-          .action-btn {
-            width: 24px;
-            height: 24px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-          }
         }
       }
     }

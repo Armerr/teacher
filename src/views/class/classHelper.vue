@@ -8,7 +8,9 @@
         @group-subtract="handleGroupSubtractScore"
         @student-add="handleStudentAddScore"
         @student-subtract="handleStudentSubtractScore"
-        @set-leader="setLeader" />
+        @set-leader="setLeader"
+        @start-editing-score="startEditingScore"
+        @end-editing-score="endEditingScore" />
     </div>
     <div class="right-container">
       <GroupRanking :groups="sortedGroups" />
@@ -34,6 +36,7 @@ const classId = ref('');
 const router = useRouter();
 const controllers = {};
 const loading = ref({});
+const needRoll = ref(true);
 
 const sortedGroups = computed(() => [...groups.value].sort((a, b) => b.score - a.score));
 
@@ -44,6 +47,24 @@ const allStudents = computed(() => {
     }))
   );
 });
+
+function startEditingScore(param) {
+  const groupId = param.groupId;
+  const studentId = param.studentId;
+  const group = groups.value.find((g) => g.id === groupId);
+  const student = group.students.find((s) => s.id === studentId);
+  student.editScore = student.score;
+  student.editingScore = true;
+}
+
+function endEditingScore(param) {
+  debugger;
+  const groupId = param.groupId;
+  const studentId = param.studentId;
+  const group = groups.value.find((g) => g.id === groupId);
+  const student = group.students.find((s) => s.id === studentId);
+  student.editingScore = false;
+}
 
 const setLeader = (param) => {
   if (param.groupId && param.studentId) {
@@ -174,6 +195,7 @@ function init() {
   groupScoreInfo({ classId: classId.value }).then((res) => {
     if (res) {
       groups.value = res.groups;
+      needRoll.value = res.needRoll === 1;
     }
   });
 }
