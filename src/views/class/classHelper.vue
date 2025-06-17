@@ -44,26 +44,93 @@ const allStudents = computed(() => {
   return groups.value.flatMap((group) =>
     group.students.map((student) => ({
       ...student,
+      groupId: group.id,
     }))
   );
 });
 
 function startEditingScore(param) {
+  if (!param) {
+    console.warn('startEditingScore called with undefined param');
+    return;
+  }
+  
   const groupId = param.groupId;
   const studentId = param.studentId;
   const group = groups.value.find((g) => g.id === groupId);
+  if (!group) {
+    console.warn('Group not found for editing:', groupId);
+    return;
+  }
+  
   const student = group.students.find((s) => s.id === studentId);
+  if (!student) {
+    console.warn('Student not found for editing:', studentId);
+    return;
+  }
+  
   student.editScore = student.score;
   student.editingScore = true;
+  console.log('Started editing score for student:', studentId, 'in group:', groupId);
 }
 
-function endEditingScore(param) {
-  debugger;
+async function endEditingScore(param) {
+  if (!param) {
+    console.warn('endEditingScore called with undefined param');
+    return;
+  }
+  
   const groupId = param.groupId;
   const studentId = param.studentId;
+  const newScore = param.newScore;
   const group = groups.value.find((g) => g.id === groupId);
+  if (!group) {
+    console.warn('Group not found:', groupId);
+    return;
+  }
+  
   const student = group.students.find((s) => s.id === studentId);
+  if (!student) {
+    console.warn('Student not found:', studentId);
+    return;
+  }
+  
+  if (newScore === undefined || newScore === student.score) {
+    student.editingScore = false;
+    student.editScore = undefined;
+    console.log('Ended editing score for student:', studentId, 'in group:', groupId);
+    return;
+  }
+  
+  const originalScore = student.score;
+  student.score = newScore;
   student.editingScore = false;
+  
+  try {
+    const scoreDelta = newScore - originalScore;
+    const payload = {
+      classId: classId.value,
+      groupId: groupId,
+      studentId: studentId,
+      score: scoreDelta
+    };
+    
+    await handStudentScore(payload);
+    
+    // 更新小组总分
+    group.score += scoreDelta;
+    
+    message.success('分数修改成功');
+  } catch (error) {
+    // 如果保存失败，恢复原始分数
+    student.score = originalScore;
+    message.error('分数修改失败，请重试');
+  } finally {
+    // 无论成功还是失败，都要重置编辑状态
+    student.editingScore = false;
+    student.editScore = undefined;
+    console.log('Ended editing score for student:', studentId, 'in group:', groupId);
+  }
 }
 
 const setLeader = (param) => {
@@ -212,19 +279,102 @@ onMounted(() => {
   flex-direction: row;
   justify-content: space-between;
   width: 100%;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 24px;
+  gap: 24px;
+  box-sizing: border-box;
 
   .left-container {
-    width: 83%;
+    width: 80%;
     display: flex;
     flex-direction: column;
+    gap: 16px;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    transition: all 0.3s ease;
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+    }
   }
 
   .right-container {
-    width: 15%;
+    width: 18%;
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
-    gap: 40px;
+    gap: 16px;
+    
+    > * {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 12px;
+      padding: 16px;
+      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      transition: all 0.3s ease;
+
+      &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+      }
+    }
+  }
+}
+
+// 响应式设计
+@media (max-width: 1200px) {
+  .container {
+    flex-direction: column;
+    gap: 20px;
+    
+    .left-container,
+    .right-container {
+      width: 100%;
+    }
+    
+    .right-container {
+      flex-direction: row;
+      justify-content: space-between;
+      
+      > * {
+        flex: 1;
+        margin: 0 10px;
+        
+        &:first-child {
+          margin-left: 0;
+        }
+        
+        &:last-child {
+          margin-right: 0;
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 16px;
+    
+    .left-container {
+      padding: 16px;
+    }
+    
+    .right-container {
+      flex-direction: column;
+      
+      > * {
+        margin: 0;
+        padding: 16px;
+      }
+    }
   }
 }
 </style>

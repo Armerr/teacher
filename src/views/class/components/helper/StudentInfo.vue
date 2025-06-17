@@ -2,23 +2,24 @@
   <div class="student-info">
     <user-outlined class="student-icon" />
     <span class="student-name">{{ item.name }}</span>
-    <crown-filled
-      v-if="item.leader"
-      class="leader-icon"
-      style="color: #f8ab02; margin-left: 8px" />
-    <a-button
-      v-if="!item.leader && hoverStudentId === item.id"
-      type="text"
-      size="small"
-      class="virtual-crown-btn"
-      @click.stop="setLeader(item.groupId, item.id)">
-      <crown-outlined style="color: rgba(0, 0, 0, 0.25)" />
-    </a-button>
+    <div class="crown-container">
+      <crown-filled
+        v-if="item.leader"
+        class="leader-icon"
+        style="color: #f8ab02" />
+      <a-button
+        v-if="!item.leader && hoverStudentId === item.id"
+        type="text"
+        size="small"
+        class="virtual-crown-btn"
+        @click.stop="setLeader(item.groupId, item.id)">
+        <crown-outlined style="color: rgba(0, 0, 0, 0.25)" />
+      </a-button>
+    </div>
   </div>
   <div class="student-actions">
     <div
-      ref="containerRef"
-      style="width: 80px">
+      ref="containerRef">
       <span
         v-if="!item.editingScore"
         class="student-score"
@@ -27,6 +28,7 @@
       >
       <a-input-number
         v-else
+        style="width:50px"
         ref="inputRef"
         v-model:value="editScore"
         :precision="0"
@@ -34,7 +36,7 @@
         @blur="handleSaveScore(item.groupId, item.id)" />
     </div>
 
-    <a-space style="margin-left: 20px">
+    <a-space style="margin-left: 5px">
       <a-button
         type="primary"
         shape="circle"
@@ -62,11 +64,12 @@ import {
   PlusOutlined,
   UserOutlined,
 } from '@ant-design/icons-vue';
-import { ref } from 'vue';
+import { ref, nextTick } from 'vue';
 import { onClickOutside } from '@vueuse/core';
 
 const editScore = ref(0);
 const containerRef = ref(null);
+const inputRef = ref(null);
 
 const emit = defineEmits([
   'student-add',
@@ -88,16 +91,23 @@ const props = defineProps({
 });
 
 onClickOutside(containerRef, () => {
-  handleSaveScore(props.item.groupId, props.item.Id);
+  if (props.item.editingScore) {
+    handleSaveScore(props.item.groupId, props.item.id);
+  }
 });
 
 const handleSaveScore = (groupId, studentId) => {
-  emit('end-editing-score', { groupId: groupId, studentId: studentId });
+  emit('end-editing-score', { groupId: groupId, studentId: studentId, newScore: editScore.value });
 };
 
-const showEditRowInput = (groupId, studentId) => {
+const showEditRowInput = async (groupId, studentId) => {
   if (groupId && studentId) {
+    editScore.value = props.item.score;
     emit('start-editing-score', { groupId, studentId });
+    await nextTick();
+    if (inputRef.value) {
+      inputRef.value.focus();
+    }
   }
 };
 
@@ -106,39 +116,103 @@ const setLeader = (groupId, studentId) => {
 };
 </script>
 <style lang="scss" scoped>
-$primary-color: #2f54eb;
 .student-info {
   position: relative;
   display: flex;
   align-items: center;
+  padding: 6px 0;
+  min-height: 36px;
 
-  .virtual-crown-btn {
+  .student-icon {
+    margin-right: 12px;
+    color: #666;
+    font-size: 16px;
+  }
+
+  .crown-container {
+    width: 32px; // 固定宽度，为皇冠图标预留空间
+    height: 24px;
     margin-left: 8px;
-    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+  
+  .leader-icon {
+    // 移除 margin-left，因为已在容器中设置
+    cursor: pointer;
+    transition: filter 0.2s ease;
+    transform: none !important;
 
     &:hover {
+      filter: brightness(1.1);
+      transform: none !important;
+    }
+    
+    &:active {
+      transform: none !important;
+    }
+    
+    &:focus {
+      transform: none !important;
+    }
+  }
+  
+  .virtual-crown-btn {
+    // 移除 margin-left，因为已在容器中设置
+    transition: color 0.2s ease;
+    transform: none !important;
+
+    &:hover {
+      transform: none !important;
       :deep(svg) {
         color: #f8ab02 !important;
       }
     }
-  }
-
-  .leader-icon {
-    margin-left: 8px;
-    cursor: pointer;
-    transition: transform 0.2s;
-
-    &:hover {
-      transform: scale(1.1);
+    
+    &:active {
+      transform: none !important;
+    }
+    
+    &:focus {
+      transform: none !important;
     }
   }
 }
 
 .student-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  
   .student-score {
-    margin-right: 12px;
     font-weight: 500;
-    color: $primary-color;
+    color: #1890ff;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 4px;
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+    background: #f0f8ff;
+    border: 1px solid #d9d9d9;
+    min-width: 40px;
+    text-align: center;
+    font-size: 14px;
+    transform: none !important;
+    
+    &:hover {
+      background: #e6f7ff;
+      border-color: #1890ff;
+      transform: none !important;
+    }
+    
+    &:active {
+      transform: none !important;
+    }
+    
+    &:focus {
+      transform: none !important;
+    }
   }
 
   .action-btn {
@@ -147,6 +221,20 @@ $primary-color: #2f54eb;
     display: flex;
     align-items: center;
     justify-content: center;
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+    transform: none !important;
+    
+    &:hover {
+      transform: none !important;
+    }
+    
+    &:active {
+      transform: none !important;
+    }
+    
+    &:focus {
+      transform: none !important;
+    }
   }
 }
 </style>

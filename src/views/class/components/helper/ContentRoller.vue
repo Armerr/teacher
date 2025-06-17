@@ -81,12 +81,12 @@ const stopRolling = () => {
   justify-content: center;
   align-items: center;
   width: 50%;
-  height: 200px;
-  padding: 16px 24px;
-  line-height: 1.5;
+  height: 100%;
+  padding: 8px 16px;
+  line-height: 1.3;
   background: #fff;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  border-radius: 12px;
+  border-radius: 8px;
 
   .header {
     position: absolute;
@@ -97,9 +97,9 @@ const stopRolling = () => {
   }
 
   .rolling-display {
-    font-size: 24px;
-    margin: 20px 0;
-    min-height: 40px;
+    font-size: 20px;
+    margin: 8px 0;
+    min-height: 30px;
 
     &.rolling {
       color: #1890ff;
@@ -111,10 +111,11 @@ const stopRolling = () => {
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin: 10px 0;
+    margin: 6px 0;
 
     .control-btn {
-      min-width: 100px;
+      min-width: 90px;
+      height: 32px;
     }
   }
 
@@ -126,21 +127,22 @@ const stopRolling = () => {
     margin: 0 auto;
     background: #f0f5ff;
     width: auto;
-    padding: 0 20px;
+    padding: 0 12px;
 
     &-icon {
-      margin-right: 8px;
+      margin-right: 6px;
       color: #2f54eb;
+      font-size: 14px;
     }
 
     &-text {
-      margin: 10px 10px;
-      font-size: 22px;
+      margin: 6px 8px;
+      font-size: 16px;
       font-weight: 500;
       color: #2f54eb;
 
       .text-name {
-        font-size: 24px;
+        font-size: 18px;
         color: red;
       }
     }

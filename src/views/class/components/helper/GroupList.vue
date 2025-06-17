@@ -11,35 +11,40 @@
       <a-card
         :title="group.name"
         class="group-card"
-        :head-style="{ padding: '0 16px', borderBottom: 'none' }">
-        <div class="group-header">
-          <div class="total-score">
-            <span class="label">小组总分：</span>
-            <span class="value">{{ group.score }}</span>
+        :head-style="{ padding: '0 16px', borderBottom: 'none' }"
+        :body-style="{ padding: '0', height: '100%', display: 'flex', flexDirection: 'column' }">
+        <div class="card-content">
+          <div class="group-header">
+            <div class="total-score">
+              <span class="label">小组总分：</span>
+              <span class="value">{{ group.score }}</span>
+            </div>
+            <div class="score-controls">
+              <div class="group-score">{{ group.score }}</div>
+              <div class="group-actions">
+                <a-button
+                  type="primary"
+                  shape="round"
+                  class="score-btn"
+                  @click="$emit('group-add', group.id)">
+                  <template #icon>
+                    <plus-outlined />
+                  </template>
+                </a-button>
+                <a-button
+                  danger
+                  shape="round"
+                  class="score-btn"
+                  @click="$emit('group-subtract', group.id)">
+                  <template #icon>
+                    <minus-outlined />
+                  </template>
+                </a-button>
+              </div>
+            </div>
           </div>
-          <a-space>
-            <a-button
-              type="primary"
-              shape="round"
-              class="score-btn"
-              @click="$emit('group-add', group.id)">
-              <template #icon>
-                <plus-outlined />
-              </template>
-            </a-button>
-            <a-button
-              danger
-              shape="round"
-              class="score-btn"
-              @click="$emit('group-subtract', group.id)">
-              <template #icon>
-                <minus-outlined />
-              </template>
-            </a-button>
-          </a-space>
-        </div>
 
-        <a-divider class="divider" />
+          <a-divider class="divider" />
 
         <a-list
           :data-source="group.students"
@@ -51,15 +56,16 @@
               @mouseleave="handleMouseLeave">
               <student-info
                 :hover-student-id="hoverStudentId"
-                :item="item"
-                @student-add="$emit('student-add')"
-                @student-subtract="$emit('student-subtract')"
+                :item="{ ...item, groupId: group.id }"
+                @student-add="$emit('student-add', item.id)"
+                @student-subtract="$emit('student-subtract', item.id)"
                 @set-leader="setLeader"
-                @start-editing-score="$emit('start-editing-score')"
-                @end-editing-score="$emit('end-editing-score')" />
+                @start-editing-score="() => $emit('start-editing-score', {groupId: group.id, studentId: item.id})"
+                @end-editing-score="() => $emit('end-editing-score', {groupId: group.id, studentId: item.id})" />
             </a-list-item>
           </template>
         </a-list>
+        </div>
       </a-card>
     </a-col>
   </a-row>
@@ -67,21 +73,13 @@
 
 <script setup>
 import {
-  UserOutlined,
   PlusOutlined,
   MinusOutlined,
-  CrownFilled,
-  CrownOutlined,
 } from '@ant-design/icons-vue';
 import { nextTick, ref } from 'vue';
-import { onClickOutside } from '@vueuse/core';
 import StudentInfo from '@views/class/components/helper/StudentInfo.vue';
 
 const hoverStudentId = ref(null);
-const inputRef = ref(null);
-
-const currentEditGroupId = ref(null);
-const currentEditStudentId = ref(null);
 
 const emit = defineEmits([
   'group-add',
@@ -115,65 +113,140 @@ const setLeader = (groupId, studentId) => {
 </script>
 
 <style lang="scss" scoped>
-$primary-color: #2f54eb;
-$text-color: #1f1f1f;
-$secondary-text: #8c8c8c;
-
 .group-list {
-  margin: 20px 10px;
-
   .group-card {
-    height: 100%;
+    margin-bottom: 16px;
     border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: all 0.2s ease;
+    border: 1px solid #e8e8e8;
+    background: white;
+    overflow: hidden;
+    min-height: 520px;
+    display: flex;
+    flex-direction: column;
+
+    &:hover {
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .card-content {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      padding: 16px;
+    }
 
     .group-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 0 8px;
+      padding: 12px 16px;
+      background: #f8f9fa;
+      border-bottom: 1px solid #e9ecef;
+      border-radius: 6px;
+      margin-bottom: 8px;
 
-      .total-score {
+      .group-title {
         font-size: 16px;
-
-        .label {
-          color: $secondary-text;
-        }
-
-        .value {
-          color: $primary-color;
-          font-weight: 600;
-        }
+        font-weight: 600;
+        margin: 0;
+        color: #333;
       }
 
-      .score-btn {
-        width: 32px;
-        height: 32px;
-        display: inline-flex;
+      .score-controls {
+        display: flex;
         align-items: center;
-        justify-content: center;
-        padding: 0 !important;
+        gap: 20px;
+      }
+
+      .group-score {
+        font-size: 16px;
+        font-weight: 600;
+        background: #1890ff;
+        color: white;
+        padding: 4px 12px;
+        border-radius: 12px;
+        min-width: 50px;
+        text-align: center;
+      }
+
+      .group-actions {
+        display: flex;
+        gap: 8px;
+
+        .ant-btn {
+          width: 32px;
+          height: 32px;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          padding: 0 !important;
+          transition: background-color 0.2s ease, border-color 0.2s ease;
+          transform: none !important;
+          
+          &:hover {
+            transform: none !important;
+          }
+          
+          &:active {
+            transform: none !important;
+          }
+          
+          &:focus {
+            transform: none !important;
+          }
+        }
       }
     }
-
-    .divider {
-      margin: 12px 0;
+   .divider {
+      margin: 8px 0;
+      border-color: rgba(0, 0, 0, 0.06);
     }
 
     .student-list {
-      max-height: 400px;
+      flex: 1;
+      min-height: 380px;
+      max-height: 380px;
       overflow-y: auto;
+      padding: 6px;
+      background: #fafafa;
+      border-radius: 8px;
+      
+      &::-webkit-scrollbar {
+        width: 4px;
+      }
+      
+      &::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      
+      &::-webkit-scrollbar-thumb {
+        background: rgba(0, 0, 0, 0.2);
+        border-radius: 2px;
+        
+        &:hover {
+          background: rgba(0, 0, 0, 0.3);
+        }
+      }
 
       .student-item {
-        padding: 4px 16px;
+        padding: 4px 12px;
         display: flex;
         justify-content: space-between;
         align-items: center;
-        transition: background-color 0.3s;
+        transition: all 0.2s ease;
         cursor: pointer;
+        border-radius: 6px;
+        margin: 1px 0;
+        background: white;
+        border: 1px solid #f0f0f0;
 
         &:hover {
-          background-color: #fafafa;
+          background: #f0f8ff;
+          border-color: #d9d9d9;
+          transform: none;
+          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
       }
     }
@@ -181,12 +254,19 @@ $secondary-text: #8c8c8c;
 }
 
 :deep(.ant-card-head) {
-  padding: 0 16px !important;
+  padding: 0 !important;
   border-bottom: none !important;
+  background: transparent !important;
 }
 
 :deep(.ant-card-body) {
-  padding: 5px 15px !important;
+  padding: 8px 16px 16px !important;
   border-bottom: none !important;
+  background: rgba(255, 255, 255, 0.8);
+}
+
+:deep(.ant-card) {
+  border: none !important;
+  background: transparent !important;
 }
 </style>
