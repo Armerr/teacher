@@ -63,9 +63,7 @@
                   @start-editing-score="
                     () => $emit('start-editing-score', { groupId: group.id, studentId: item.id })
                   "
-                  @end-editing-score="
-                    (param) => $emit('end-editing-score', param)
-                  " />
+                  @end-editing-score="(param) => $emit('end-editing-score', param)" />
               </a-list-item>
             </template>
           </a-list>
@@ -202,6 +200,7 @@ const setLeader = (groupId, studentId) => {
         }
       }
     }
+
     .divider {
       margin: 8px 0;
       border-color: rgba(0, 0, 0, 0.06);
