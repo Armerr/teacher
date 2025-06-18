@@ -18,8 +18,7 @@
     </div>
   </div>
   <div class="student-actions">
-    <div
-      ref="containerRef">
+    <div ref="containerRef">
       <span
         v-if="!item.editingScore"
         class="student-score"
@@ -28,9 +27,9 @@
       >
       <a-input-number
         v-else
-        style="width:50px"
         ref="inputRef"
         v-model:value="editScore"
+        style="width: 50px"
         :precision="0"
         @pressEnter="handleSaveScore(item.groupId, item.id)"
         @blur="handleSaveScore(item.groupId, item.id)" />
@@ -138,7 +137,7 @@ const setLeader = (groupId, studentId) => {
     justify-content: center;
     position: relative;
   }
-  
+
   .leader-icon {
     // 移除 margin-left，因为已在容器中设置
     cursor: pointer;
@@ -149,16 +148,16 @@ const setLeader = (groupId, studentId) => {
       filter: brightness(1.1);
       transform: none !important;
     }
-    
+
     &:active {
       transform: none !important;
     }
-    
+
     &:focus {
       transform: none !important;
     }
   }
-  
+
   .virtual-crown-btn {
     // 移除 margin-left，因为已在容器中设置
     transition: color 0.2s ease;
@@ -166,15 +165,16 @@ const setLeader = (groupId, studentId) => {
 
     &:hover {
       transform: none !important;
+
       :deep(svg) {
         color: #f8ab02 !important;
       }
     }
-    
+
     &:active {
       transform: none !important;
     }
-    
+
     &:focus {
       transform: none !important;
     }
@@ -185,31 +185,33 @@ const setLeader = (groupId, studentId) => {
   display: flex;
   align-items: center;
   gap: 12px;
-  
+
   .student-score {
     font-weight: 500;
     color: #1890ff;
     cursor: pointer;
     padding: 4px 8px;
     border-radius: 4px;
-    transition: background-color 0.2s ease, border-color 0.2s ease;
+    transition:
+      background-color 0.2s ease,
+      border-color 0.2s ease;
     background: #f0f8ff;
     border: 1px solid #d9d9d9;
     min-width: 40px;
     text-align: center;
     font-size: 14px;
     transform: none !important;
-    
+
     &:hover {
       background: #e6f7ff;
       border-color: #1890ff;
       transform: none !important;
     }
-    
+
     &:active {
       transform: none !important;
     }
-    
+
     &:focus {
       transform: none !important;
     }
@@ -221,17 +223,19 @@ const setLeader = (groupId, studentId) => {
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: background-color 0.2s ease, border-color 0.2s ease;
+    transition:
+      background-color 0.2s ease,
+      border-color 0.2s ease;
     transform: none !important;
-    
+
     &:hover {
       transform: none !important;
     }
-    
+
     &:active {
       transform: none !important;
     }
-    
+
     &:focus {
       transform: none !important;
     }

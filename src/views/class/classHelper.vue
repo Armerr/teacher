@@ -26,7 +26,13 @@ import RollCall from '@views/class/components/helper/RollCall.vue';
 import GroupRanking from '@views/class/components/helper/GroupRanking.vue';
 import StudentRanking from '@views/class/components/helper/StudentRanking.vue';
 import { message } from 'ant-design-vue';
-import { groupScoreInfo, handGroupScore, handStudentScore, setLeaderStudent } from '@api/class.js';
+import {
+  groupScoreInfo,
+  handGroupScore,
+  handStudentScore,
+  setLeaderStudent,
+  setStudentScore,
+} from '@api/class.js';
 import { useRouter } from 'vue-router';
 import storage from '@common/storage.js';
 import { USER_ID } from '@common/constant.js';
@@ -51,76 +57,67 @@ const allStudents = computed(() => {
 
 function startEditingScore(param) {
   if (!param) {
-    console.warn('startEditingScore called with undefined param');
     return;
   }
-  
+
   const groupId = param.groupId;
   const studentId = param.studentId;
   const group = groups.value.find((g) => g.id === groupId);
   if (!group) {
-    console.warn('Group not found for editing:', groupId);
     return;
   }
-  
+
   const student = group.students.find((s) => s.id === studentId);
   if (!student) {
-    console.warn('Student not found for editing:', studentId);
     return;
   }
-  
+
   student.editScore = student.score;
   student.editingScore = true;
-  console.log('Started editing score for student:', studentId, 'in group:', groupId);
 }
 
 async function endEditingScore(param) {
   if (!param) {
-    console.warn('endEditingScore called with undefined param');
     return;
   }
-  
+
   const groupId = param.groupId;
   const studentId = param.studentId;
   const newScore = param.newScore;
   const group = groups.value.find((g) => g.id === groupId);
   if (!group) {
-    console.warn('Group not found:', groupId);
     return;
   }
-  
+
   const student = group.students.find((s) => s.id === studentId);
   if (!student) {
-    console.warn('Student not found:', studentId);
     return;
   }
-  
+
   if (newScore === undefined || newScore === student.score) {
     student.editingScore = false;
     student.editScore = undefined;
-    console.log('Ended editing score for student:', studentId, 'in group:', groupId);
     return;
   }
-  
+
   const originalScore = student.score;
   student.score = newScore;
   student.editingScore = false;
-  
+
   try {
     const scoreDelta = newScore - originalScore;
+    const baseParam = {};
+    baseParam.userId = storage.get(USER_ID) ?? '';
     const payload = {
-      classId: classId.value,
-      groupId: groupId,
       studentId: studentId,
-      score: scoreDelta
+      score: newScore,
     };
-    
-    await handStudentScore(payload);
-    
-    // 更新小组总分
-    group.score += scoreDelta;
-    
-    message.success('分数修改成功');
+
+    setStudentScore(baseParam, payload).then(() => {
+      // 更新小组总分
+      group.score += scoreDelta;
+      message.success('分数修改成功');
+    });
   } catch (error) {
     // 如果保存失败，恢复原始分数
     student.score = originalScore;
@@ -129,7 +126,6 @@ async function endEditingScore(param) {
     // 无论成功还是失败，都要重置编辑状态
     student.editingScore = false;
     student.editScore = undefined;
-    console.log('Ended editing score for student:', studentId, 'in group:', groupId);
   }
 }
 
@@ -310,7 +306,7 @@ onMounted(() => {
     flex-direction: column;
     justify-content: flex-start;
     gap: 16px;
-    
+
     > * {
       background: rgba(255, 255, 255, 0.95);
       border-radius: 12px;
@@ -333,24 +329,24 @@ onMounted(() => {
   .container {
     flex-direction: column;
     gap: 20px;
-    
+
     .left-container,
     .right-container {
       width: 100%;
     }
-    
+
     .right-container {
       flex-direction: row;
       justify-content: space-between;
-      
+
       > * {
         flex: 1;
         margin: 0 10px;
-        
+
         &:first-child {
           margin-left: 0;
         }
-        
+
         &:last-child {
           margin-right: 0;
         }
@@ -362,14 +358,14 @@ onMounted(() => {
 @media (max-width: 768px) {
   .container {
     padding: 16px;
-    
+
     .left-container {
       padding: 16px;
     }
-    
+
     .right-container {
       flex-direction: column;
-      
+
       > * {
         margin: 0;
         padding: 16px;

@@ -46,25 +46,29 @@
 
           <a-divider class="divider" />
 
-        <a-list
-          :data-source="group.students"
-          class="student-list">
-          <template #renderItem="{ item }">
-            <a-list-item
-              class="student-item"
-              @mouseenter="handleMouseEnter(item.id)"
-              @mouseleave="handleMouseLeave">
-              <student-info
-                :hover-student-id="hoverStudentId"
-                :item="{ ...item, groupId: group.id }"
-                @student-add="$emit('student-add', item.id)"
-                @student-subtract="$emit('student-subtract', item.id)"
-                @set-leader="setLeader"
-                @start-editing-score="() => $emit('start-editing-score', {groupId: group.id, studentId: item.id})"
-                @end-editing-score="() => $emit('end-editing-score', {groupId: group.id, studentId: item.id})" />
-            </a-list-item>
-          </template>
-        </a-list>
+          <a-list
+            :data-source="group.students"
+            class="student-list">
+            <template #renderItem="{ item }">
+              <a-list-item
+                class="student-item"
+                @mouseenter="handleMouseEnter(item.id)"
+                @mouseleave="handleMouseLeave">
+                <student-info
+                  :hover-student-id="hoverStudentId"
+                  :item="{ ...item, groupId: group.id }"
+                  @student-add="$emit('student-add', item.id)"
+                  @student-subtract="$emit('student-subtract', item.id)"
+                  @set-leader="setLeader"
+                  @start-editing-score="
+                    () => $emit('start-editing-score', { groupId: group.id, studentId: item.id })
+                  "
+                  @end-editing-score="
+                    (param) => $emit('end-editing-score', param)
+                  " />
+              </a-list-item>
+            </template>
+          </a-list>
         </div>
       </a-card>
     </a-col>
@@ -72,10 +76,7 @@
 </template>
 
 <script setup>
-import {
-  PlusOutlined,
-  MinusOutlined,
-} from '@ant-design/icons-vue';
+import { PlusOutlined, MinusOutlined } from '@ant-design/icons-vue';
 import { nextTick, ref } from 'vue';
 import StudentInfo from '@views/class/components/helper/StudentInfo.vue';
 
@@ -182,24 +183,26 @@ const setLeader = (groupId, studentId) => {
           align-items: center;
           justify-content: center;
           padding: 0 !important;
-          transition: background-color 0.2s ease, border-color 0.2s ease;
+          transition:
+            background-color 0.2s ease,
+            border-color 0.2s ease;
           transform: none !important;
-          
+
           &:hover {
             transform: none !important;
           }
-          
+
           &:active {
             transform: none !important;
           }
-          
+
           &:focus {
             transform: none !important;
           }
         }
       }
     }
-   .divider {
+    .divider {
       margin: 8px 0;
       border-color: rgba(0, 0, 0, 0.06);
     }
@@ -212,19 +215,19 @@ const setLeader = (groupId, studentId) => {
       padding: 6px;
       background: #fafafa;
       border-radius: 8px;
-      
+
       &::-webkit-scrollbar {
         width: 4px;
       }
-      
+
       &::-webkit-scrollbar-track {
         background: transparent;
       }
-      
+
       &::-webkit-scrollbar-thumb {
         background: rgba(0, 0, 0, 0.2);
         border-radius: 2px;
-        
+
         &:hover {
           background: rgba(0, 0, 0, 0.3);
         }

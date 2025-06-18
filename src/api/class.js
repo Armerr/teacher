@@ -8,5 +8,8 @@ export const handGroupScore = (param) => http.post('/class/group/score/cal', nul
 
 export const handStudentScore = (param) => http.post('/class/student/score/cal', null, param);
 
+export const setStudentScore = (param, payload) =>
+  http.post('/class/student/score/set', param, payload);
+
 export const setLeaderStudent = (param, payload) =>
   http.post('/class/student/leader/set', param, payload);
