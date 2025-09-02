@@ -17,10 +17,29 @@
           <div class="group-header">
             <div class="total-score">
               <span class="label">小组总分：</span>
-              <span class="value">{{ group.score }}</span>
+              <span class="group-score">{{ group.score }}</span>
+              <a-space
+                style="margin-left: 5px"
+                direction="vertical">
+                <a-button
+                  type="primary"
+                  shape="circle"
+                  size="small"
+                  class="action-btn"
+                  @click="$emit('group-score-add', group.id)">
+                  <plus-outlined />
+                </a-button>
+                <a-button
+                  danger
+                  shape="circle"
+                  size="small"
+                  class="action-btn"
+                  @click="$emit('group-score-subtract', group.id)">
+                  <minus-outlined />
+                </a-button>
+              </a-space>
             </div>
             <div class="score-controls">
-              <div class="group-score">{{ group.score }}</div>
               <div class="group-actions">
                 <a-button
                   type="primary"
@@ -88,6 +107,8 @@ const emit = defineEmits([
   'set-leader',
   'start-editing-score',
   'end-editing-score',
+  'group-score-add',
+  'group-score-subtract',
 ]);
 
 defineProps({
@@ -145,6 +166,11 @@ const setLeader = (groupId, studentId) => {
       border-bottom: 1px solid #e9ecef;
       border-radius: 6px;
       margin-bottom: 8px;
+
+      .total-score {
+        display: flex;
+        align-items: center;
+      }
 
       .group-title {
         font-size: 16px;

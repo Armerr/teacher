@@ -6,6 +6,8 @@
         :groups="groups"
         @group-add="handleGroupAddScore"
         @group-subtract="handleGroupSubtractScore"
+        @group-score-add="handleGroupScoreAddScore"
+        @group-score-subtract="handleGroupScoreSubtractScore"
         @student-add="handleStudentAddScore"
         @student-subtract="handleStudentSubtractScore"
         @set-leader="setLeader"
@@ -29,6 +31,7 @@ import { message } from 'ant-design-vue';
 import {
   groupScoreInfo,
   handGroupScore,
+  handGroupStudentScore,
   handStudentScore,
   setLeaderStudent,
   setStudentScore,
@@ -152,6 +155,26 @@ const handleGroupSubtractScore = (groupId) => {
   handleGroupAdjust(groupId, -1);
 };
 
+const handleGroupScoreAddScore = (groupId) => {
+  handleGroupScoreAdjust(groupId, 1);
+};
+
+const handleGroupScoreSubtractScore = (groupId) => {
+  handleGroupScoreAdjust(groupId, -1);
+};
+
+const handleGroupScoreAdjust = (groupId, delta) => {
+  const group = groups.value.find((g) => g.id === groupId);
+  if (!group) return;
+  const param = {};
+  param.classId = classId.value;
+  param.groupId = groupId;
+  param.score = delta;
+  handGroupScore(param).then(() => {
+    group.score += delta;
+  });
+};
+
 const groupOperations = new Map();
 
 const handleGroupAdjust = async (groupId, delta) => {
@@ -185,7 +208,7 @@ const handleGroupAdjust = async (groupId, delta) => {
     param.classId = classId.value;
     param.groupId = group.id;
     param.score = delta;
-    handGroupScore(param).then(
+    handGroupStudentScore(param).then(
       () => {
         // do nothing
       },
